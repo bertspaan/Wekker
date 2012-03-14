@@ -5,7 +5,6 @@ void debugCounter(int counter) {
 
 }
 
-void debugSpeed(int speed) {
 void debugSpeed(double speed) {
   
   Serial.print("Speed: ");
