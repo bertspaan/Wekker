@@ -17,7 +17,7 @@ public:
   boolean read();
   
   boolean getAlarmSet();
-  int getFunctionTimesPressed();
+  boolean getFunctionPressed();
   boolean getSnoozePressed();
   
 private:
@@ -29,15 +29,8 @@ private:
   int _pinFunction;
   
   boolean _alarmSet;
-
   boolean _functionPressed;
-  int _functionTimesPressed;
-  int _functionTimesPressing;
-  boolean _functionPressing;
-  unsigned long _functionPressingPreviousMillis;
-  
   boolean _snoozePressed;
-  
   
 };
 

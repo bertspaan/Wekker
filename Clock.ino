@@ -71,7 +71,7 @@ void Clock::setTime(int minutes)
     int hour = minute / 60;
     minute = minute % 60;  
     
-    Serial.print("nieuwe tijd: ");
+    Serial.print("Nieuwe tijd: ");
     Serial.print(hour);
     Serial.print(":");
     Serial.println(minute);

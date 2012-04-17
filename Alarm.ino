@@ -21,10 +21,7 @@
 enum DisplayStates {
   dsTime              =  1,
   dsSettingTime       =  2,
-  dsSettingAlarm      =  4,
-  dsSettingSnooze     =  8,
-  dsSettingBrightness = 16,
-  dsBlinking          = 32
+  dsSettingAlarm      =  4
 };
 
 volatile boolean alarmSet = false;
@@ -63,7 +60,9 @@ void loop()
   if (displayState == dsSettingAlarm) {
     unsigned long diffMillis = millis() - previousMillis;
     if (diffMillis > 1000) {
+      
       displayState = dsTime;
+      
     }
   }
 
@@ -72,28 +71,11 @@ void loop()
   if (difference) { 
     if (displayState == dsSettingTime) {
       
-      Serial.println("Set time!");precies!
-      
-      
       double speed = encoder.computeSpeed(minutesTime);
       
       alarmOn = false;
       relay.setState(false);
       minutesTime += difference * speed;
-      displayMinutes(minutesTime);
-      //clock.setTime(minutesTime);
-      
-    } else if (displayState == dsSettingSnooze) {
-      
-      Serial.println("Set snooze!");      
-      
-    } else if (displayState == dsSettingBrightness) {
-      
-      double speed = encoder.computeSpeed(brightness);
-
-      brightness += difference * speed;
-      displaySetBrightness(brightness);
-      //displayBrightness(minutesAlarm);
       displayMinutes(minutesTime);
       
     } else { // displayState == dsSettingAlarm
@@ -127,23 +109,27 @@ void readButtons() {
     
     alarmSet = buttons.getAlarmSet();
     
-    int functionButtonTimesPressed = buttons.getFunctionTimesPressed();
+    boolean functionButtonPressed = buttons.getFunctionPressed();
     boolean snoozePressed = buttons.getSnoozePressed();
     
-    if (functionButtonTimesPressed == 1) {
+    if (functionButtonPressed) {
       displayState = dsSettingTime;
-    } else if (functionButtonTimesPressed == 2) {
-      displayState = dsSettingSnooze;
-    } else if (functionButtonTimesPressed == 3) {
-      displayState = dsSettingBrightness;
+    } else if (!functionButtonPressed) {
+
+      if (displayState == dsSettingTime) {
+        clock.setTime(minutesTime);
+      }
+      displayState = dsTime;      
+
     }
+    
 
     Serial.print("alarmSet: ");
     Serial.print(alarmSet);
     Serial.print(" alarmOn: ");
     Serial.print(alarmOn);
     Serial.print(" functie: ");
-    Serial.println(functionButtonTimesPressed);
+    Serial.println(functionButtonPressed);
     
     if (alarmSet && alarmOn && snoozePressed) {
       Serial.println("Nu dus snoozen!");
@@ -157,9 +143,11 @@ void readButtons() {
 }
 
 /*
- * ==================================================================================================
+ * =============================================================================================================
+ * =============================================================================================================
  * DISPLAY
- * ==================================================================================================
+ * =============================================================================================================
+ * =============================================================================================================
  */
 
 #define DISPLAY_REFRESH_RATE 25
@@ -194,7 +182,7 @@ void displayMinutes(int display_counter) {
 
   if ((display_counter_diff > 0) && (display_millis_diff > (1000.0 / DISPLAY_REFRESH_RATE))) {
 
-    displayResetDisplay();
+    //displayResetDisplay();
     displayWriteMinutes(displayGetMinutes(display_counter));
 
     _display_previous_millis = millis();
