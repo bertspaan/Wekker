@@ -18,6 +18,7 @@ private:
   
   unsigned long _clock_millis_last;
   int _clock_minutes;
+  int previousSetTime;
   
 };
 

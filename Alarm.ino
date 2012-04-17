@@ -59,8 +59,6 @@ void setup()
 void loop()
 {
   readButtons();
-  
-  minutesTime = clock.readTimeTimed();
 
   if (displayState == dsSettingAlarm) {
     unsigned long diffMillis = millis() - previousMillis;
@@ -74,21 +72,16 @@ void loop()
   if (difference) { 
     if (displayState == dsSettingTime) {
       
-      Serial.println("Set time!");
+      Serial.println("Set time!");precies!
       
       
       double speed = encoder.computeSpeed(minutesTime);
       
       alarmOn = false;
       relay.setState(false);
-      
       minutesTime += difference * speed;
       displayMinutes(minutesTime);
-      
-      clock.setTime(minutesTime);
-      
-      
-      
+      //clock.setTime(minutesTime);
       
     } else if (displayState == dsSettingSnooze) {
       
@@ -118,6 +111,7 @@ void loop()
     previousMillis = millis();
     
   } else if (displayState == dsTime) {
+    minutesTime = clock.readTimeTimed();
     displayMinutes(minutesTime);
   }
 
