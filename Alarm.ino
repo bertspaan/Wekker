@@ -3,20 +3,20 @@
 #include "Buttons.h"
 #include "Relay.h"
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 #define MINUTES_PER_DAY (24 * 60)
 
-#define DISPLAY_PIN 10
-#define RELAY_PIN 2
+#define PIN_RELAY 4
+#define PIN_DISPLAY 10
 
-#define PIN_FUNCTION_BUTTON (4)
-#define PIN_BIG_RED_BUTTON (6)
+#define PIN_FUNCTION_BUTTON (3)
+#define PIN_BIG_RED_BUTTON (5)
 #define PIN_ALARM_BUTTON (8)
 
 //Encoder
-#define PIN_HIGHBIT (15)
-#define PIN_LOWBIT  (14)
+#define PIN_ROTARY_LOWBIT  (14) // A. Analog 0
+#define PIN_ROTARY_HIGHBIT (15) // B. Analog 1
 
 enum DisplayStates {
   dsTime              =  1,
@@ -40,15 +40,19 @@ volatile double brightness = 0;
 volatile double snoozeMinutes = 10;
 
 Clock clock;
-SoftwareSerial displaySerial(DISPLAY_PIN - 1, DISPLAY_PIN);
+
+static const boolean SOFTWARE_SERIAL = false;
+//SoftwareSerial displaySerial(PIN_DISPLAY - 1, PIN_DISPLAY);
+
+
 Buttons buttons(PIN_ALARM_BUTTON, PIN_BIG_RED_BUTTON, PIN_FUNCTION_BUTTON);
-Encoder encoder(PIN_LOWBIT, PIN_HIGHBIT);
-Relay relay(RELAY_PIN);
+Encoder encoder(PIN_ROTARY_LOWBIT, PIN_ROTARY_HIGHBIT);
+Relay relay(PIN_RELAY);
 
 void setup()
 {  
-  Serial.begin(115200);
-  Serial.println("Start");
+  //Serial.begin(115200);
+  //Serial.println("Start");
   
   displayBegin();  
 }
@@ -121,18 +125,17 @@ void readButtons() {
       }
       displayState = dsTime;      
 
-    }
-    
+    }    
 
-    Serial.print("alarmSet: ");
+    /*Serial.print("alarmSet: ");
     Serial.print(alarmSet);
     Serial.print(" alarmOn: ");
     Serial.print(alarmOn);
     Serial.print(" functie: ");
-    Serial.println(functionButtonPressed);
+    Serial.println(functionButtonPressed);*/
     
     if (alarmSet && alarmOn && snoozePressed) {
-      Serial.println("Nu dus snoozen!");
+      //Serial.println("Nu dus snoozen!");
       minutesAlarm = minutesTime + snoozeMinutes;    
       
       // Make function:
@@ -154,12 +157,21 @@ void readButtons() {
 
 void displayBegin() {
 
-  displaySerial.begin(9600);
-  
-  displaySerial.write(0x76);
-  displaySerial.write(0x7A);
-  displaySerial.write((byte)0);
-
+  if (SOFTWARE_SERIAL) {
+//    displaySerial.begin(9600);
+//    
+//    displaySerial.write(0x76);
+//    displaySerial.write(0x7A);
+//    displaySerial.write((byte)0);
+  } else {  
+    Serial.begin(9600);
+    
+    /*Serial.write(0x76);
+    Serial.write(0x7A);
+    Serial.write((byte)0);*/
+    
+    Serial.print("v");
+  }
   displayResetDisplay();
 
 }
@@ -169,8 +181,6 @@ void displaySetBaud9600() {
   //displaySerial->write(2);
 }
 
-void displayBrightness(char newBrightness) {
-}
 
 void displayMinutes(int display_counter) {
 
@@ -202,8 +212,12 @@ void displayWriteMinutes(int display_minutes)
   if (display_minutes <  1000) {
     display_buf[0] = 0x78;
   }
-
-  displaySerial.print(display_buf);
+  
+  if (SOFTWARE_SERIAL) {
+//    displaySerial.print(display_buf);
+  } else {
+    Serial.print(display_buf);
+  }  
 }
 
 int displayGetMinutes(int display_counter) {
@@ -223,19 +237,30 @@ void displaySetBrightness(int newBrightness) {
   
   byte byteBrightness = (byte) ((newBrightness + 255) % 255);
   
-  Serial.print("Set brightness: ");
-  Serial.println(byteBrightness);
-  
-  displaySerial.write(0x7A);
-  displaySerial.write(byteBrightness);
+  /*Serial.print("Set brightness: ");
+  Serial.println(byteBrightness);*/
+  if (SOFTWARE_SERIAL) {
+//    displaySerial.write(0x7A);
+//    displaySerial.write(byteBrightness);
+  } else {
+    Serial.write(0x7A);
+    Serial.write(byteBrightness);
+  }
 }
 
 void displayResetDisplay() {
- 
-  displaySerial.write(0x76);
-   // Zet dubbele punt aan:
-   displaySerial.write(0x77);
-   displaySerial.write(16);
+  if (SOFTWARE_SERIAL) {
+//    displaySerial.write(0x76);
+//    // Zet dubbele punt aan:
+//    displaySerial.write(0x77);
+//    displaySerial.write(16);
+  } else {
+    Serial.write(0x76);
+    // Zet dubbele punt aan:
+    Serial.write(0x77);
+    Serial.write(16);
+  }
+  displaySetBrightness(0);
 }
 
 

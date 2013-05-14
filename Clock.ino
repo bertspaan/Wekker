@@ -1,5 +1,8 @@
-/*
+  /*
  * Analog in 4 & 5
+ * (en dat kan niet anders: http://bildr.org/2011/03/ds1307-arduino/)
+ * SDA = 4
+ * SCL = 5
  */
 
 #include "Clock.h"
@@ -71,10 +74,10 @@ void Clock::setTime(int minutes)
     int hour = minute / 60;
     minute = minute % 60;  
     
-    Serial.print("Nieuwe tijd: ");
+    /*Serial.print("Nieuwe tijd: ");
     Serial.print(hour);
     Serial.print(":");
-    Serial.println(minute);
+    Serial.println(minute);*/
     
     int second = 0;
     //int minute = 15;
