@@ -11,7 +11,7 @@
 #define DS1307_ADDRESS 0x68
 
 Clock::Clock() {
-   Wire.begin();
+  Wire.begin();
    
    _clock_millis_last = 0;
    _clock_minutes = 0;
@@ -36,8 +36,7 @@ byte Clock::bcdToDec(byte val)  {
 }
 
 // Convert normal decimal numbers to binary coded decimal
-byte Clock::decToBcd(byte val)
-{
+byte Clock::decToBcd(byte val) {
   return ( (val/10*16) + (val%10) );
 }
 
@@ -66,18 +65,12 @@ int Clock::readTime() {
   return hour * 60 + minute;
 }
 
-void Clock::setTime(int minutes)                
-{
+void Clock::setTime(int minutes) {
   if (previousSetTime != minutes) {
     previousSetTime = minutes;
     int minute = ((int) minutes + MINUTES_PER_DAY) % MINUTES_PER_DAY;
     int hour = minute / 60;
     minute = minute % 60;  
-    
-    /*Serial.print("Nieuwe tijd: ");
-    Serial.print(hour);
-    Serial.print(":");
-    Serial.println(minute);*/
     
     int second = 0;
     //int minute = 15;

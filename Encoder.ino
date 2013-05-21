@@ -1,5 +1,4 @@
 
-
 Encoder::Encoder(int pinLow, int pinHigh) {
   _pinLow = pinLow;
   _pinHigh = pinHigh;
@@ -39,23 +38,12 @@ int Encoder::read() {
   return result;
 }
 
-
 double Encoder::computeSpeed(int counter) {
   
   int counter_diff = abs(counter - _speed_counter_last);
   unsigned long millis_diff = abs(millis() - _speed_millis_last);
  
-  //if ( counter_diff > SPEED_COUNTER_THRESHOLD) {
   if ( (millis_diff > SPEED_MILLIS_THRESHOLD) && (counter_diff > 0) ) {
-    
-   /* Serial.print("counter: ");
-    Serial.print(counter);
-    Serial.print(" countrlast: ");
-    Serial.print(_speed_counter_last);
-    Serial.print(" milllisdif: ");
-    Serial.print(counter_diff);
-    Serial.print(" milllisdif: ");
-    Serial.println(millis_diff);*/
     
     _speed = log10((counter_diff * 1.0) / millis_diff * SPEED_MULTIPLIER);
   
@@ -67,14 +55,10 @@ double Encoder::computeSpeed(int counter) {
 
     _speed_millis_last = millis();
     _speed_counter_last = counter;
-    //debugDouble("Speed", _speed); 
   } else if (millis_diff > 10 * SPEED_MILLIS_THRESHOLD) {
     _speed = SPEED_MIN;
   }
 
   return _speed;
-
 }
-
-
 
